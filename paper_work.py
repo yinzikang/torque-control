@@ -38,14 +38,14 @@ sim.forward()
 
 duration = 4000
 eef_name = "ee"
-desired_pos = np.concatenate((np.linspace(-0.3, -0.75, duration).reshape(duration, 1),
-                              -0.1135 * np.ones((duration, 1), dtype=float),
-                              0.05 * np.ones((duration, 1), dtype=float)),
-                             axis=1)
-# desired_pos = np.concatenate((-0.45 * np.ones((duration, 1), dtype=float),
+# desired_pos = np.concatenate((np.linspace(-0.3, -0.75, duration).reshape(duration, 1),
 #                               -0.1135 * np.ones((duration, 1), dtype=float),
 #                               0.05 * np.ones((duration, 1), dtype=float)),
 #                              axis=1)
+desired_pos = np.concatenate((-0.45 * np.ones((duration, 1), dtype=float),
+                              -0.1135 * np.ones((duration, 1), dtype=float),
+                              0.05 * np.ones((duration, 1), dtype=float)),
+                             axis=1)
 # desired_pos = np.array(sim.data.get_site_xpos(eef_name).copy())
 desired_ori = np.array(sim.data.site_xmat[sim.model.site_name2id(eef_name)].reshape([3, 3]).copy())
 # desired_pos_vel = np.array([-0.4 / duration, 0, 0])
@@ -62,7 +62,7 @@ fext_old = np.array([0, 0, 0, 0, 0, 0])
 
 update_rate = 0
 omega = 0
-F_desire = np.array([0, 0, -7, 0, 0, 0])
+F_desire = np.array([0, 0, -20, 0, 0, 0])
 
 B_x = [500, 500, 40, 500, 500, 500]  # 速度
 # B_x = [500, 500, 400, 4000, 4000, 4000]

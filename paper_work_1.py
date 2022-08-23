@@ -48,7 +48,7 @@ desired_pos = np.concatenate((np.linspace(-0.3, -0.75, duration).reshape(duratio
 #                              axis=1)
 # desired_pos = np.array(sim.data.get_site_xpos(eef_name).copy())
 desired_ori = np.array(sim.data.site_xmat[sim.model.site_name2id(eef_name)].reshape([3, 3]).copy())
-desired_pos_vel = np.array([-0.4 / duration, 0, 0])
+desired_pos_vel = np.array([-0.45 / duration, 0, 0])
 # desired_pos_vel = np.array([0, 0, 0], dtype=np.float32)
 desired_ori_vel = np.array([0, 0, 0], dtype=np.float32)
 desired_pos_acc = np.array([0, 0, 0], dtype=np.float32)
