@@ -78,6 +78,7 @@ robot = rbt(sim)
 buffer = []
 ee_pos_buffer = []
 fext_buffer = []
+tau_buffer = []
 headers = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
 id = sim.model.body_name2id('tip')
 
@@ -140,32 +141,32 @@ for step in range(duration):
     # # tau += np.dot(coef, np.dot(Md_x, sum))
 
     # paper中不稳定的阻抗控制力跟踪, M_x, B_x, K_x
-    # D_q = robot.mass_matrix()
-    # D_x = np.dot(J_T_inv, np.dot(D_q, J_inv))
-    # h_x = np.dot(J_T_inv, sim.data.qfrc_bias[:]) - np.dot(np.dot(D_x, Jd2), qd)
-    # # T = np.multiply(B_x, xd_error) + np.multiply(K_x, x_error) + F_desire + fext
-    # T = np.multiply(B_x, xd_error) + np.multiply(K_x, x_error) + F_desire
-    # V = desired_acc + np.dot(M_x_inv, T)
-    #
-    # F = np.dot(D_x, V) + h_x + fext
-    # tau = np.dot(J.T, F)
-
-    # paper中不稳定的力跟踪阻抗控制算法, M_x, B_x, K_x，different control parameter in different occasions
     D_q = robot.mass_matrix()
     D_x = np.dot(J_T_inv, np.dot(D_q, J_inv))
     h_x = np.dot(J_T_inv, sim.data.qfrc_bias[:]) - np.dot(np.dot(D_x, Jd2), qd)
-    # h_x = np.dot(J_T_inv, sim.data.qfrc_bias[:])
-    if np.all(fext == 0):
-        print("free space")
-        K_x = [300, 300, 100, 1000, 1000, 1000]
-        T = np.multiply(B_x, xd_error) + np.multiply(K_x, x_error) + F_desire
-    else:
-        print("contact space", fext[2])
-        K_x = [100, 100, 0, 1000, 1000, 1000]
-        T = np.multiply(B_x, xd_error) + np.multiply(K_x, x_error) + F_desire + fext
-    V = xdd_error + np.dot(M_x_inv, T)
-    F = np.dot(D_x, V) + h_x - fext
+    # T = np.multiply(B_x, xd_error) + np.multiply(K_x, x_error) + F_desire + fext
+    T = np.multiply(B_x, xd_error) + np.multiply(K_x, x_error) + F_desire
+    V = desired_acc + np.dot(M_x_inv, T)
+
+    F = np.dot(D_x, V) + h_x + fext
     tau = np.dot(J.T, F)
+
+    # paper中不稳定的力跟踪阻抗控制算法, M_x, B_x, K_x，different control parameter in different occasions
+    # D_q = robot.mass_matrix()
+    # D_x = np.dot(J_T_inv, np.dot(D_q, J_inv))
+    # h_x = np.dot(J_T_inv, sim.data.qfrc_bias[:]) - np.dot(np.dot(D_x, Jd2), qd)
+    # # h_x = np.dot(J_T_inv, sim.data.qfrc_bias[:])
+    # if np.all(fext == 0):
+    #     print("free space")
+    #     K_x = [300, 300, 100, 1000, 1000, 1000]
+    #     T = np.multiply(B_x, xd_error) + np.multiply(K_x, x_error) + F_desire
+    # else:
+    #     print("contact space", fext[2])
+    #     K_x = [100, 100, 0, 1000, 1000, 1000]
+    #     T = np.multiply(B_x, xd_error) + np.multiply(K_x, x_error) + F_desire + fext
+    # V = xdd_error + np.dot(M_x_inv, T)
+    # F = np.dot(D_x, V) + h_x - fext
+    # tau = np.dot(J.T, F)
 
     # paper中稳定的力跟踪阻抗控制算法, M_x, B_x, K_x, import robust control
     # D_q = robot.mass_matrix()
@@ -198,6 +199,7 @@ for step in range(duration):
     # if step > 3000:
     #     F_desire = np.array([0, 0, -10, 0, 0, 0])
 
+    tau_buffer.append(tau)
     sim.data.ctrl[:] = tau
     sim.step()
     buffer.append([fext[2]])
@@ -208,6 +210,7 @@ for step in range(duration):
 # plt.show()
 ee_pos_buffer = np.array(ee_pos_buffer)
 fext_buffer = np.array(fext_buffer)
+tau_buffer = np.array(tau_buffer)
 
 # plt.title("X pos")
 # plt.xlabel("time/ms")
@@ -225,21 +228,21 @@ fext_buffer = np.array(fext_buffer)
 # plt.plot(np.arange(0, duration - 2), ee_pos_buffer[1:duration - 1, 2])
 # plt.show()
 #
-plt.title("X force")
-plt.xlabel("time/ms")
-plt.ylabel("force/N")
-plt.plot(np.arange(0, duration - 2), fext_buffer[1:duration - 1, 0])
-plt.show()
-plt.title("Y force")
-plt.xlabel("time/ms")
-plt.ylabel("force/N")
-plt.plot(np.arange(0, duration - 2), fext_buffer[1:duration - 1, 1])
-plt.show()
-plt.title("Z force")
-plt.xlabel("time/ms")
-plt.ylabel("force/N")
-plt.plot(np.arange(0, duration - 2), fext_buffer[1:duration - 1, 2])
-plt.show()
+# plt.title("X force")
+# plt.xlabel("time/ms")
+# plt.ylabel("force/N")
+# plt.plot(np.arange(0, duration - 2), fext_buffer[1:duration - 1, 0])
+# plt.show()
+# plt.title("Y force")
+# plt.xlabel("time/ms")
+# plt.ylabel("force/N")
+# plt.plot(np.arange(0, duration - 2), fext_buffer[1:duration - 1, 1])
+# plt.show()
+# plt.title("Z force")
+# plt.xlabel("time/ms")
+# plt.ylabel("force/N")
+# plt.plot(np.arange(0, duration - 2), fext_buffer[1:duration - 1, 2])
+# plt.show()
 #
 # plt.title("X force VS pos")
 # plt.xlabel("pos/m")
@@ -256,3 +259,8 @@ plt.show()
 # plt.ylabel("force/N")
 # plt.plot(ee_pos_buffer[1:duration - 1, 2], fext_buffer[1:duration - 1, 2])
 # plt.show()
+
+plt.title("tau_buffer")
+plt.plot(tau_buffer)
+plt.legend(['joint 1', 'joint 2', 'joint 3', 'joint 4', 'joint 5', 'joint 6'])
+plt.show()

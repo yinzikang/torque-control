@@ -114,7 +114,7 @@
         <!--检测接触点的力与力矩-->
         <force name="contact_force" site="contact_sensor"/>
         <torque name="contact_torque" site="contact_sensor"/>
-<!--        &lt;!&ndash;检测nft传感器的力与力矩&ndash;&gt;-->
+        <!--检测nft传感器的力与力矩-->
 <!--        <force name="nft_force" site="nft_sensor"/>-->
 <!--        <torque name="nft_torque" site="nft_sensor"/>-->
     </sensor>

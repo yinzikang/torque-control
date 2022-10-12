@@ -1,3 +1,4 @@
+# 只设置关节位置并step会出错
 import numpy as np
 import mujoco_py as mp
 
